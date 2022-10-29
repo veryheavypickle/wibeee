@@ -1,4 +1,5 @@
 import src.wibeee.utils
+import src.wibeee.errors as errors
 import requests
 # ip = "http://192.168.1.145/"
 # url = "http://" + ip + "/services/user/values.xml"
@@ -31,3 +32,4 @@ class WiBeee:
             result = self.callURL(url)
             if "<title>WiBeee</title>" in result:
                 return host
+        raise errors.NoWiBeeeDevices("No WiBee Devices were found on the local network")
