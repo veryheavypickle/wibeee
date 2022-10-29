@@ -7,10 +7,10 @@ import requests
 class WiBeee:
     def __init__(self, host=None, port=80, timeout=10.0, ucm='async_httpx'):
         self.host = host
-        if not host:
-            self.host = self.autoDiscover()
         self.port = port
         self.timeout = timeout
+        if not host:
+            self.host = self.autoDiscover()
 
     def callURL(self, url):
         """Call URL function."""
@@ -27,7 +27,7 @@ class WiBeee:
     def autoDiscover(self):
         hosts = utils.getActiveHosts()
         for host in hosts:
-            url = "http://{0}:{1}/en/login.html".format(self.host, self.port)
+            url = "http://{0}:{1}/en/login.html".format(host, self.port)
             result = self.callURL(url)
             if "<title>WiBeee</title>" in result:
                 return host
