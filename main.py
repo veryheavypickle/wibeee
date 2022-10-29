@@ -1,6 +1,5 @@
 import src
 
 if __name__ == '__main__':
-    WiBeee = src.WiBeee()
-
-    print(WiBeee.host)
+    WiBeee = src.WiBeee("192.168.1.145")
+    print(WiBeee.getStatus())

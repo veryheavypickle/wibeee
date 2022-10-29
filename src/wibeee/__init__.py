@@ -1,8 +1,6 @@
 import src.wibeee.utils
 import src.wibeee.errors as errors
 import requests
-# ip = "http://192.168.1.145/"
-# url = "http://" + ip + "/services/user/values.xml"
 
 
 class WiBeee:
@@ -12,6 +10,7 @@ class WiBeee:
         self.timeout = timeout
         if not host:
             self.host = self.autoDiscover()
+        self.baseURL = "http://{0}:{1}".format(host, self.port)
 
     def callURL(self, url):
         """Call URL function."""
@@ -22,14 +21,20 @@ class WiBeee:
                     request, timeout=self.timeout
                 )
             return response.text
-        except Exception as e:
-            return "Error: " + str(e)
+        except requests.exceptions.Timeout:
+            raise errors.BadHostName("The WiBeee device seems to be down, try autodiscovery")
+        except requests.exceptions.ConnectionError:
+            raise errors.CouldNotConnect("Could not connect to the device")
 
     def autoDiscover(self):
         hosts = utils.getActiveHosts()
         for host in hosts:
-            url = "http://{0}:{1}/en/login.html".format(host, self.port)
+            url = self.baseURL + "/en/login.html"
             result = self.callURL(url)
             if "<title>WiBeee</title>" in result:
                 return host
         raise errors.NoWiBeeeDevices("No WiBee Devices were found on the local network")
+
+    def getStatus(self):
+        url = self.baseURL + "/en/status.xml"
+        return self.callURL(url)
