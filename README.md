@@ -43,8 +43,8 @@ $ pip install dist/*.tar.gz  # for the latest version of yodas.
 From Releases (latest)
 -------------
 ```shell
-$ wget https://github.com/veryheavypickle/wibeee/releases/download/v1.4.0/wibeee-1.0.2.tar.gz
-$ pip install wibeee-1.0.2.tar.gz
+$ wget https://github.com/veryheavypickle/wibeee/releases/download/v1.4.0/wibeee-1.1.0.tar.gz
+$ pip install wibeee-1.1.0.tar.gz
 ```
 
 Usages
