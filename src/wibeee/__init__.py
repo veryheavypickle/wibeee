@@ -46,8 +46,13 @@ class WiBeee:
             pingStatus = os.system('ping -t 1 -c 1 ' + ip)
             if not pingStatus:  # if result is not an error
                 url = utils.getSchemaURL(ip, self.port) + "/en/login.html"
-                if "<title>WiBeee</title>" in self.callURL(url):  # if the webpage has WiBee in it
-                    return ip  # then the ip is correct and the WiBee device was found
+                try:
+                    if "<title>WiBeee</title>" in self.callURL(url):  # if the webpage has WiBee in it
+                        return ip  # then the ip is correct and the WiBee device was found
+                except errors.TooManyAttempts:
+                    # except the error because the device testing isn't WiBee, then this error will be raised
+                    pass
+
         raise errors.NoWiBeeeDevices("No WiBee Devices were found on the local network")
 
     def getHost(self):
