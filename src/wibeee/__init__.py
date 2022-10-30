@@ -3,6 +3,7 @@ import src.wibeee.errors as errors
 import requests
 import xmltodict
 import time
+import os
 
 
 class WiBeee:
@@ -33,12 +34,14 @@ class WiBeee:
             raise errors.BadHostName("The WiBeee device seems to be down, try autodiscovery to get the correct url")
 
     def autoDiscover(self):
-        hosts = utils.getActiveHosts()
-        for host in hosts:
-            url = self.baseURL + "/en/login.html"
-            result = self.callURL(url)
-            if "<title>WiBeee</title>" in result:
-                return host
+        baseIP = utils.getBaseIP()
+        for num in range(2, 255):  # for each possible IP on local network
+            ip = baseIP + str(num)
+            pingStatus = os.system('ping -t 1 -c 1 ' + ip)
+            if not pingStatus:  # if result is not an error
+                url = ip + "/en/login.html"
+                if "<title>WiBeee</title>" in self.callURL(url):  # if the webpage has WiBee in it
+                    return ip  # then the ip is correct and the WiBee device was found
         raise errors.NoWiBeeeDevices("No WiBee Devices were found on the local network")
 
     def getHost(self):

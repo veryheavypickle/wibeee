@@ -21,14 +21,3 @@ def getBaseIP(ip=None):
         baseIP += ip[i] + "."
     return baseIP
 
-
-def getActiveHosts():
-    # this gets all active IPs on local network
-    baseIP = getBaseIP()
-    hosts = []
-    for num in range(2, 255):
-        ip = baseIP + str(num)
-        res = os.system('ping -t 1 -c 1 ' + ip)
-        if not res:
-            hosts.append(ip)
-    return hosts
