@@ -2,7 +2,7 @@ class NoWiBeeeDevices(Exception):
     pass
 
 
-class BadHostName(Exception):
+class BadIP(Exception):
     pass
 
 
