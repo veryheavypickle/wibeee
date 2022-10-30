@@ -21,3 +21,6 @@ def getBaseIP(ip=None):
         baseIP += ip[i] + "."
     return baseIP
 
+
+def getSchemaURL(ip, port):
+    return "http://{0}:{1}".format(ip, port)

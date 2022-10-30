@@ -12,8 +12,10 @@ class WiBeee:
         self.port = port
         self.timeout = timeout
         if not host:
+            print("Discovering all IPs, this will take some time...\n")
             self.host = self.autoDiscover()
-        self.baseURL = "http://{0}:{1}".format(host, self.port)
+            print("\nIP found! Use \"WiBeee('{0}')\" next time instead of just \"WiBeee()\"\nIP: {0}".format(self.host))
+        self.baseURL = utils.getSchemaURL(self.host, self.port)
 
     def callURL(self, url, attempts=1):
         """Call URL function."""
@@ -26,20 +28,24 @@ class WiBeee:
                     request, timeout=self.timeout
                 )
             return response.text
-        except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
+        except requests.exceptions.ConnectionError:
             time.sleep(1)
+            return self.callURL(url, attempts + 1)
+        except requests.exceptions.ReadTimeout:
             return self.callURL(url, attempts + 1)
         except requests.exceptions.Timeout as e:
             print(e.response)
-            raise errors.BadHostName("The WiBeee device seems to be down, try autodiscovery to get the correct url")
+        raise errors.BadHostName("The WiBeee device seems to be down, try autodiscovery to get the correct url")
 
     def autoDiscover(self):
         baseIP = utils.getBaseIP()
         for num in range(2, 255):  # for each possible IP on local network
             ip = baseIP + str(num)
+            # -t timing is 1 second
+            # -c is number of requests
             pingStatus = os.system('ping -t 1 -c 1 ' + ip)
             if not pingStatus:  # if result is not an error
-                url = ip + "/en/login.html"
+                url = utils.getSchemaURL(ip, self.port) + "/en/login.html"
                 if "<title>WiBeee</title>" in self.callURL(url):  # if the webpage has WiBee in it
                     return ip  # then the ip is correct and the WiBee device was found
         raise errors.NoWiBeeeDevices("No WiBee Devices were found on the local network")
