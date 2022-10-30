@@ -14,7 +14,7 @@ This project assumes you already have your WiBeee hardware setup.
 This project was inspired by [pywibeee](https://pypi.org/project/pywibeee/).
 To see code examples checkout `examples.py` or scroll down to [usages](https://github.com/veryheavypickle/wibeee#usages)
 
-### Projects that use yodas
+### Projects that use wibeee
 No open source projects yet! Send me your projects to be featured here.
 
 Install
@@ -37,7 +37,7 @@ For this I assume you already have a virtual python environment or that python3 
 ```shell
 $ python -m pip install --upgrade build
 $ python -m build
-$ pip install dist/*.tar.gz  # for the latest version of yodas.
+$ pip install dist/*.tar.gz  # for the latest version of wibeee.
 ```
 
 From Releases (latest)
