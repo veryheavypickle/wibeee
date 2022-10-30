@@ -152,7 +152,8 @@ This function returns the ip address of the WiBeee device.
 Changelog
 =========
 1.1.0
-Added documentation.
+-----
+Added documentation and changed function names
 
 1. Moved `WiBeee.getHost()` to `WiBeee.getIP()`
 2. Moved `WiBeee.host` to `WiBeee.ip`
