@@ -5,3 +5,7 @@ class NoWiBeeeDevices(Exception):
 class BadHostName(Exception):
     pass
 
+
+class TooManyAttempts(Exception):
+    pass
+

@@ -14,9 +14,11 @@ class WiBeee:
             self.host = self.autoDiscover()
         self.baseURL = "http://{0}:{1}".format(host, self.port)
 
-    def callURL(self, url):
+    def callURL(self, url, attempts=1):
         """Call URL function."""
         request = requests.Request("GET", url).prepare()
+        if attempts > 10:
+            raise errors.TooManyAttempts("Multiple attempts to connect to the device failed")
         try:
             with requests.Session() as sess:
                 response = sess.send(
@@ -24,10 +26,10 @@ class WiBeee:
                 )
             return response.text
         except requests.exceptions.Timeout:
-            raise errors.BadHostName("The WiBeee device seems to be down, try autodiscovery")
-        except requests.exceptions.ConnectionError:
+            raise errors.BadHostName("The WiBeee device seems to be down, try autodiscovery to get the correct url")
+        except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
             time.sleep(1)
-            return self.callURL(url)
+            return self.callURL(url, attempts + 1)
 
     def autoDiscover(self):
         hosts = utils.getActiveHosts()
