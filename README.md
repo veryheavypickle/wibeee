@@ -43,7 +43,7 @@ $ pip install dist/*.tar.gz  # for the latest version of yodas.
 From Releases (latest)
 -------------
 ```shell
-$ wget https://github.com/veryheavypickle/wibeee/releases/download/v1.4.0/wibeee-1.1.0.tar.gz
+$ wget https://github.com/veryheavypickle/wibeee/releases/download/v1.1.0/wibeee-1.1.0.tar.gz
 $ pip install wibeee-1.1.0.tar.gz
 ```
 
@@ -95,62 +95,127 @@ either set `verbose=True` when creating the `WiBeee` object or `WiBeee.setVerbos
 
 ### Power
 ```python
->>> wb.power()  # returns the current active power usage in Watts (W)
+>> > wb.getPower()
 100.0
 ```
-This function returns the current power usage. The phase is by default `1` but can be up to `3`.
+This function returns the current power usage in Watts (W). The phase is by default `1` but can be up to `4`.
 > *phase:* `int`
 > 
 > **returns:** `float`
 
 ### Current
 ```python
->>> wb.current()  # returns the rms current power usage in Amps (A)
+>> > wb.getCurrent()
 1.0
 ```
-This function returns the current usage. The phase is by default `1` but can be up to `3`.
+This function returns the current amp usage in Amps (A). The phase is by default `1` but can be up to `4`.
 > *phase:* `int`
 > 
 > **returns:** `float`
 
 ### Voltage
 ```python
->>> wb.voltage()  # returns the rms volage in Volts (V)
+>> > wb.getVoltage()
 230.0
 ```
-This function returns the voltage. The phase is by default `1` but can be up to `3`.
+This function returns the voltage in Volts (V). The phase is by default `1` but can be up to `4`.
 > *phase:* `int`
 > 
 > **returns:** `float`
 
 ### Frequency
 ```python
->>> wb.frequency()  # returns the rms volage in Volts (V)
+>> > wb.getFrequency()
 50.0
 ```
-This function returns the frequency of the AC power. The phase is by default `1` but can be up to `3`.
+This function returns the frequency (Hz) of the AC . The phase is by default `1` but can be up to `4`.
 > *phase:* `int`
 > 
 > **returns:** `float`
 
-### Information
+### Scale
 ```python
->>> wb.getInfo()  # returns all information the client can currently access
-{'model': 'WBB', 'webversion': '4.4.164',... ...., 'ground': '0.00'}
+>> > wb.getScale()
+60
 ```
-Returns all possible information.
-> **returns:** `dict`
+This function returns the scale. Currently, I don't know what `scale` is or what its units are, but the functionality exists.
+> **returns:** `int`
+
+### Coil Status
+```python
+>> > wb.getCoilStatus()
+'-'
+```
+This function returns the coil status. Currently, I don't know what the possible statuses are, I will update this README once I do know.
+> **returns:** `str`
+
+### Ground
+```python
+>> > wb.getGround()
+'-'
+```
+This function returns the ground. I am assuming that ground is in Volts (V)
+> **returns:** `float`
+
+### Model
+```python
+>> > wb.getGround()
+'-'
+```
+This function returns the ground. I am assuming that ground is in Volts (V)
+> **returns:** `float`
 
 ### IP
 ```python
->>> wb.getIP()  # returns the rms volage in Volts (V)
+>>> wb.getIP()
 '192.168.1.150'
 ```
 This function returns the ip address of the WiBeee device.
 > **returns:** `str`
 
+### Model
+```python
+>>> wb.getModel()
+'WBB'
+```
+This function returns the model the WiBeee device.
+> **returns:** `str`
+
+### Firmware Version
+```python
+>>> wb.getFirmwareVersion()
+'4.4.164'
+```
+This function returns the firmware version of the WiBeee device.
+> **returns:** `str`
+
+### Time
+```python
+>>> wb.getTime()
+2022-10-30 16:57:22
+```
+This function returns the current time in the device.
+The return type is `datetime.datetime`, you can read more about it [here](https://www.geeksforgeeks.org/python-datetime-datetime-class/)
+> **returns:** `datetime.datetime`
+
 Changelog
 =========
+1.2.0
+-----
+Added more functions
+
+1. Added `WiBeee.getScale()`
+2. Added `WiBeee.getCoilStatus()`
+3. Added `WiBeee.getGround()`
+4. Added `WiBeee.getModel()`
+5. Added `WiBeee.getFirmwareVersion()`
+6. Added `WiBeee.getTime()`
+7. Moved `WiBeee.getInfo()` to `WiBeee.__getInfo()`
+8. Moved `WiBeee.power()` to `WiBeee.getPower()`
+9. Moved `WiBeee.current()` to `WiBeee.getCurrent()`
+10. Moved `WiBeee.voltage()` to `WiBeee.getVoltage()`
+11. Moved `WiBeee.frequency()` to `WiBeee.getFrequency()`
+
 1.1.0
 -----
 Added documentation and changed function names
@@ -161,6 +226,6 @@ Added documentation and changed function names
 4. Moved `WiBeee.callURL()` to `WiBeee.__callURL()`
 5. Moved `errors.BadHostName` to `errors.BadIP`
 6. Moved `WiBeee.autoDiscover()` to `WiBeee.__findDeviceIP()`
-7. Added variable `attempts` to `WiBeee.__findDeviceIP`
+7. Added variable `attempts` to `WiBeee.__findDeviceIP()`
 8. Added `WiBeee.setTimeout()`
 9. Added `WiBeee.setVerbose()`

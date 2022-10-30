@@ -1,5 +1,6 @@
 from .utils import *
 from .errors import *
+import datetime
 import requests
 import xmltodict
 import time
@@ -20,19 +21,18 @@ class WiBeee:
         self.baseURL = getSchemaURL(self.ip, self.port)
 
     def __callURL(self, url, attempts=1):
-        """Call URL function."""
         request = requests.Request("GET", url).prepare()
         if attempts > 10:
             raise TooManyAttempts("Multiple attempts to connect to the device failed")
         try:
             with requests.Session() as sess:
-                response = sess.send(
-                    request, timeout=self.timeout
-                )
+                response = sess.send(request, timeout=self.timeout)
             return response.text
         except requests.exceptions.ConnectionError as e:
             if self.verbose:
+                print("\nError I need to deal with")
                 print(e)
+                print("")
             time.sleep(1)
             return self.__callURL(url, attempts + 1)
         except requests.exceptions.ReadTimeout as e:
@@ -66,17 +66,7 @@ class WiBeee:
 
         raise NoWiBeeeDevices("No WiBee Devices were found on the local network")
 
-    def getIP(self):
-        return self.ip
-
-    def setTimeout(self, timeout):
-        self.timeout = timeout
-
-    def setVerbose(self, verbose):
-        assert verbose is type(bool)
-        self.verbose = verbose
-
-    def getInfo(self):
+    def __getInfo(self):
         url = self.baseURL + "/en/status.xml"
         response = self.__callURL(url)
         try:
@@ -85,21 +75,54 @@ class WiBeee:
             if self.verbose:
                 print(e)
                 print(response)
-            return self.getInfo()
+            return self.__getInfo()
 
-    def power(self, phase=1):
+    def setTimeout(self, timeout):
+        self.timeout = timeout
+
+    def setVerbose(self, verbose):
+        assert verbose is type(bool)
+        self.verbose = verbose
+
+    def getPower(self, phase=1):
+        # returns the active power use, not calculated
         key = "fase{}_p_activa".format(phase)
-        return float(self.getInfo()[key])
+        return float(self.__getInfo()[key])
 
-    def current(self, phase=1):
+    def getCurrent(self, phase=1):
+        # rms is root-mean-square
         key = "fase{}_irms".format(phase)
-        return float(self.getInfo()[key])
+        return float(self.__getInfo()[key])
 
-    def voltage(self, phase=1):
+    def getVoltage(self, phase=1):
         # rms is root-mean-square
         key = "fase{}_vrms".format(phase)
-        return float(self.getInfo()[key])
+        return float(self.__getInfo()[key])
 
-    def frequency(self, phase=1):
+    def getFrequency(self, phase=1):
         key = "fase{}_frecuencia".format(phase)
-        return float(self.getInfo()[key])
+        return float(self.__getInfo()[key])
+
+    def getScale(self):
+        # I don't know what units are used here
+        return int(self.__getInfo()["scale"])
+
+    def getCoilStatus(self):
+        return self.__getInfo()["coilStatus"]
+
+    def getGround(self):
+        # idk what the units are, I am assuming volts
+        return self.__getInfo()["ground"]
+
+    def getIP(self):
+        return self.ip
+
+    def getModel(self):
+        return self.__getInfo()["model"]
+
+    def getFirmwareVersion(self):
+        return self.__getInfo()["webversion"]
+
+    def getTime(self):
+        deviceTime = int(self.__getInfo()["time"])
+        return datetime.datetime.fromtimestamp(deviceTime)
