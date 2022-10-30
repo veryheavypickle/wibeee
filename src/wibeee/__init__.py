@@ -4,13 +4,16 @@ import requests
 import xmltodict
 import time
 import os
+import datetime
+import xml
 
 
 class WiBeee:
-    def __init__(self, host=None, port=80, timeout=10.0):
+    def __init__(self, host=None, port=80, timeout=10.0, verbose=False):
         self.host = host
         self.port = port
         self.timeout = timeout
+        self.verbose = verbose
         if not host:
             print("Discovering all IPs, this will take some time...\n")
             self.host = self.autoDiscover()
@@ -28,13 +31,19 @@ class WiBeee:
                     request, timeout=self.timeout
                 )
             return response.text
-        except requests.exceptions.ConnectionError:
+        except requests.exceptions.ConnectionError as e:
+            if self.verbose:
+                print(e)
             time.sleep(1)
             return self.callURL(url, attempts + 1)
-        except requests.exceptions.ReadTimeout:
+        except requests.exceptions.ReadTimeout as e:
+            if self.verbose:
+                print(e)
             return self.callURL(url, attempts + 1)
         except requests.exceptions.Timeout as e:
-            print(e.response)
+            if self.verbose:
+                print(e)
+            pass
         raise errors.BadHostName("The WiBeee device seems to be down, try autodiscovery to get the correct url")
 
     def autoDiscover(self):
@@ -60,7 +69,13 @@ class WiBeee:
 
     def getStatus(self):
         url = self.baseURL + "/en/status.xml"
-        return xmltodict.parse(self.callURL(url))["response"]
+        response = self.callURL(url)
+        try:
+            return xmltodict.parse(response)["response"]
+        except xml.parsers.expat.ExpatError as e:
+            if self.verbose:
+                print(e)
+            return self.getStatus()
 
     def voltage(self, phase=1):
         # rms is root-mean-square
@@ -75,6 +90,9 @@ class WiBeee:
         key = "fase{}_frecuencia".format(phase)
         return float(self.getStatus()[key])
 
-    def power(self, phase=1):
+    def power(self, phase=1, pretty=False):
         key = "fase{}_p_activa".format(phase)
-        return float(self.getStatus()[key])
+        status = float(self.getStatus()[key])
+        if pretty:
+            return "{0} - {1} W".format(datetime.datetime.now(), status)
+        return status
