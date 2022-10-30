@@ -5,5 +5,3 @@ class NoWiBeeeDevices(Exception):
 class BadHostName(Exception):
     pass
 
-class CouldNotConnect(Exception):
-    pass

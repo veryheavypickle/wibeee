@@ -1,6 +1,8 @@
 import src.wibeee.utils
 import src.wibeee.errors as errors
 import requests
+import xmltodict
+import time
 
 
 class WiBeee:
@@ -24,7 +26,8 @@ class WiBeee:
         except requests.exceptions.Timeout:
             raise errors.BadHostName("The WiBeee device seems to be down, try autodiscovery")
         except requests.exceptions.ConnectionError:
-            raise errors.CouldNotConnect("Could not connect to the device")
+            time.sleep(1)
+            return self.callURL(url)
 
     def autoDiscover(self):
         hosts = utils.getActiveHosts()
@@ -37,4 +40,4 @@ class WiBeee:
 
     def getStatus(self):
         url = self.baseURL + "/en/status.xml"
-        return self.callURL(url)
+        return xmltodict.parse(self.callURL(url))["response"]
