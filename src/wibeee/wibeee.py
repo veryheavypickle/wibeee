@@ -1,5 +1,5 @@
 from .utils import *
-import src.wibeee.errors as errors
+from .errors import *
 import requests
 import xmltodict
 import time
@@ -24,7 +24,7 @@ class WiBeee:
         """Call URL function."""
         request = requests.Request("GET", url).prepare()
         if attempts > 10:
-            raise errors.TooManyAttempts("Multiple attempts to connect to the device failed")
+            raise TooManyAttempts("Multiple attempts to connect to the device failed")
         try:
             with requests.Session() as sess:
                 response = sess.send(
@@ -44,7 +44,7 @@ class WiBeee:
             if self.verbose:
                 print(e)
             pass
-        raise errors.BadHostName("The WiBeee device seems to be down, try autodiscovery to get the correct url")
+        raise BadHostName("The WiBeee device seems to be down, try autodiscovery to get the correct url")
 
     def autoDiscover(self):
         baseIP = getBaseIP()
@@ -58,11 +58,11 @@ class WiBeee:
                 try:
                     if "<title>WiBeee</title>" in self.callURL(url):  # if the webpage has WiBee in it
                         return ip  # then the ip is correct and the WiBee device was found
-                except errors.TooManyAttempts:
+                except TooManyAttempts:
                     # except the error because the device testing isn't WiBee, then this error will be raised
                     pass
 
-        raise errors.NoWiBeeeDevices("No WiBee Devices were found on the local network")
+        raise NoWiBeeeDevices("No WiBee Devices were found on the local network")
 
     def getHost(self):
         return self.host
